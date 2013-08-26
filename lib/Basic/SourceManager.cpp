@@ -2144,7 +2144,10 @@ bool SourceManager::isBeforeInTranslationUnit(SourceLocation LHS,
       return LIsScratch;
     return LOffs.second < ROffs.second;
   }
-  llvm_unreachable("Unsortable locations found");
+  //AXEL: Work around diags from include chains not rooted in main file.
+  //AXEL: llvm_unreachable("Unsortable locations found");
+  assert(0 && "Unsortable locations found");
+  return LOffs.first < ROffs.first;
 }
 
 void SourceManager::PrintStats() const {
