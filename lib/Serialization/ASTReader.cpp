@@ -1258,7 +1258,7 @@ bool ASTReader::ReadSLocEntry(int ID) {
     // We will detect whether a file changed and return 'Failure' for it, but
     // we will also try to fail gracefully by setting up the SLocEntry.
     unsigned InputID = Record[4];
-    InputFile IF = getInputFile(*F, InputID);
+    InputFile IF = getInputFile(*F, InputID, /*Complain=*/false);
     const FileEntry *File = IF.getFile();
     bool OverriddenBuffer = IF.isOverridden();
 
@@ -1941,7 +1941,7 @@ InputFile ASTReader::getInputFile(ModuleFile &F, unsigned ID, bool Complain) {
   BitstreamCursor &Cursor = F.InputFilesCursor;
   SavedStreamPosition SavedPosition(Cursor);
   Cursor.JumpToBit(F.InputFileOffsets[ID-1]);
-  
+
   InputFileInfo FI = readInputFileInfo(F, ID);
   off_t StoredSize = FI.StoredSize;
   time_t StoredTime = FI.StoredTime;
