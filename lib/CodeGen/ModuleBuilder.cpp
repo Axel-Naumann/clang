@@ -14,6 +14,7 @@
 #include "clang/CodeGen/ModuleBuilder.h"
 #include "CodeGenModule.h"
 #include "CGDebugInfo.h"
+#include "CodeGenTypes.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/Expr.h"
@@ -50,6 +51,10 @@ namespace {
 
     virtual llvm::Module* ReleaseModule() {
       return M.take();
+    }
+
+    virtual llvm::Type* ConvertType(QualType T) {
+      return Builder->getTypes().ConvertType(T);
     }
 
     virtual void Initialize(ASTContext &Context) {
