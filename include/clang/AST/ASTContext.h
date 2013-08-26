@@ -1097,7 +1097,8 @@ public:
                              QualType equivalentType);
 
   QualType getSubstTemplateTypeParmType(const TemplateTypeParmType *Replaced,
-                                        QualType Replacement) const;
+                                        QualType Replacement,
+                                        bool AllowNonCanonical = false) const;
   QualType getSubstTemplateTypeParmPackType(
                                           const TemplateTypeParmType *Replaced,
                                             const TemplateArgument &ArgPack);
