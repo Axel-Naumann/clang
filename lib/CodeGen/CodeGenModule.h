@@ -1096,7 +1096,7 @@ private:
   /// Generates a global array of functions and priorities using the given list
   /// and name. This array will have appending linkage and is suitable for use
   /// as a LLVM constructor or destructor array.
-  void EmitCtorList(const CtorList &Fns, const char *GlobalName);
+  void EmitCtorList(CtorList &Fns, const char *GlobalName);
 
   /// Emit the RTTI descriptors for the given type.
   void EmitFundamentalRTTIDescriptor(QualType Type);
