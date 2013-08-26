@@ -1696,7 +1696,7 @@ FunctionProtoType::getNoexceptSpec(const ASTContext &ctx) const {
 bool FunctionProtoType::isNothrow(const ASTContext &Ctx,
                                   bool ResultIfDependent) const {
   ExceptionSpecificationType EST = getExceptionSpecType();
-  assert(EST != EST_Unevaluated && EST != EST_Uninstantiated);
+  //AXEL: assert(EST != EST_Unevaluated && EST != EST_Uninstantiated);
   if (EST == EST_DynamicNone || EST == EST_BasicNoexcept)
     return true;
 
