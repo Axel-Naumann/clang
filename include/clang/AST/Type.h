@@ -3017,7 +3017,7 @@ public:
   }
   bool isNothrow(const ASTContext &Ctx) const {
     ExceptionSpecificationType EST = getExceptionSpecType();
-    assert(EST != EST_Unevaluated && EST != EST_Uninstantiated);
+    //AXEL: assert(EST != EST_Unevaluated && EST != EST_Uninstantiated);
     if (EST == EST_DynamicNone || EST == EST_BasicNoexcept)
       return true;
     if (EST != EST_ComputedNoexcept)
