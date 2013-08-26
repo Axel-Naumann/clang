@@ -95,9 +95,6 @@ test::
 report::
 	@ $(MAKE) -C test report
 
-clean::
-	@ $(MAKE) -C test clean
-
 libs-only: all
 
 tags::

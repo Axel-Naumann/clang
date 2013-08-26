@@ -12,6 +12,7 @@ CLANG_LEVEL := ..
 include $(CLANG_LEVEL)/../../Makefile.config
 
 DIRS := 
+ifneq ($(ROOT_BUILDCLANG),)
 PARALLEL_DIRS := driver diagtool
 
 ifeq ($(ENABLE_CLANG_REWRITER),1)
@@ -25,6 +26,9 @@ endif
 ifeq ($(ENABLE_CLANG_ARCMT), 1)
   DIRS += libclang c-index-test c-arcmt-test
   PARALLEL_DIRS += arcmt-test
+endif
+else
+DIRS := libclang
 endif
 
 # Recurse into the extra repository of tools if present.
