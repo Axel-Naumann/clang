@@ -49,7 +49,11 @@ namespace clang {
       return M.get();
     }
 
-    llvm::Module *ReleaseModule() override { return M.release(); }
+    llvm::Module *ReleaseModule() override {
+      assert(M && "Releasing 0?");
+      Builder->Release();
+      return M.take();
+    }
 
     void print(llvm::raw_ostream& out) {
       out << "\n\nCodeGen:\n";
