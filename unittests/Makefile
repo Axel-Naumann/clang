@@ -7,6 +7,8 @@
 #
 ##===----------------------------------------------------------------------===##
 
+ifeq($(DISABLE_UNITTESTS_FOR_ROOT),DISABLE_UNITTESTS_FOR_ROOT)
+
 # If CLANG_LEVEL is not set, then we are the top-level Makefile. Otherwise, we
 # are being included from a subdirectory makefile.
 
@@ -39,3 +41,5 @@ MAKEFILE_UNITTEST_NO_INCLUDE_COMMON := 1
 include $(LLVM_SRC_ROOT)/unittests/Makefile.unittest
 
 endif  # IS_UNITTEST_LEVEL
+
+endif # DISABLE_UNITTESTS_FOR_ROOT
