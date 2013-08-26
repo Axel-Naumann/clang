@@ -1310,6 +1310,7 @@ bool Generic_GCC::GCCInstallationDetector::getBiarchSibling(Multilib &M) const {
     "x86_64-linux-gnu", "x86_64-unknown-linux-gnu", "x86_64-pc-linux-gnu",
     "x86_64-redhat-linux6E", "x86_64-redhat-linux", "x86_64-suse-linux",
     "x86_64-manbo-linux-gnu", "x86_64-linux-gnu", "x86_64-slackware-linux",
+    "x86_64-mageia-linux-gnu",
     "x86_64-linux-android"
   };
   static const char *const X86LibDirs[] = { "/lib32", "/lib" };
@@ -1317,6 +1318,7 @@ bool Generic_GCC::GCCInstallationDetector::getBiarchSibling(Multilib &M) const {
     "i686-linux-gnu", "i686-pc-linux-gnu", "i486-linux-gnu", "i386-linux-gnu",
     "i386-redhat-linux6E", "i686-redhat-linux", "i586-redhat-linux",
     "i386-redhat-linux", "i586-suse-linux", "i486-slackware-linux",
+    "i586-mageia-linux-gnu",
     "i686-montavista-linux", "i686-linux-android"
   };
 
