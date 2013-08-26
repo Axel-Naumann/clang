@@ -48,15 +48,17 @@ IdentifierInfo *Parser::getSEHExceptKeyword() {
   return Ident__except;
 }
 
-Parser::Parser(Preprocessor &pp, Sema &actions, bool skipFunctionBodies)
+Parser::Parser(Preprocessor &pp, Sema &actions, bool skipFunctionBodies,
+               bool isTemporary /*=false*/)
   : PP(pp), Actions(actions), Diags(PP.getDiagnostics()),
     GreaterThanIsOperator(true), ColonIsSacred(false), 
     InMessageExpression(false), TemplateParameterDepth(0),
-    ParsingInObjCContainer(false) {
+    ParsingInObjCContainer(false), IsTemporary(isTemporary) {
   SkipFunctionBodies = pp.isCodeCompletionEnabled() || skipFunctionBodies;
   Tok.startToken();
   Tok.setKind(tok::eof);
-  Actions.CurScope = 0;
+  if (!IsTemporary)
+    Actions.CurScope = 0;
   NumCachedScopes = 0;
   ParenCount = BracketCount = BraceCount = 0;
   CurParsedObjCImpl = 0;
@@ -64,37 +66,48 @@ Parser::Parser(Preprocessor &pp, Sema &actions, bool skipFunctionBodies)
   // Add #pragma handlers. These are removed and destroyed in the
   // destructor.
   AlignHandler.reset(new PragmaAlignHandler());
-  PP.AddPragmaHandler(AlignHandler.get());
+  if (!IsTemporary)
+    PP.AddPragmaHandler(AlignHandler.get());
 
   GCCVisibilityHandler.reset(new PragmaGCCVisibilityHandler());
-  PP.AddPragmaHandler("GCC", GCCVisibilityHandler.get());
+  if (!IsTemporary)
+    PP.AddPragmaHandler("GCC", GCCVisibilityHandler.get());
 
   OptionsHandler.reset(new PragmaOptionsHandler());
-  PP.AddPragmaHandler(OptionsHandler.get());
+  if (!IsTemporary)
+    PP.AddPragmaHandler(OptionsHandler.get());
 
   PackHandler.reset(new PragmaPackHandler());
-  PP.AddPragmaHandler(PackHandler.get());
+  if (!IsTemporary)
+    PP.AddPragmaHandler(PackHandler.get());
     
   MSStructHandler.reset(new PragmaMSStructHandler());
-  PP.AddPragmaHandler(MSStructHandler.get());
+  if (!IsTemporary)
+    PP.AddPragmaHandler(MSStructHandler.get());
 
   UnusedHandler.reset(new PragmaUnusedHandler());
-  PP.AddPragmaHandler(UnusedHandler.get());
+  if (!IsTemporary)
+    PP.AddPragmaHandler(UnusedHandler.get());
 
   WeakHandler.reset(new PragmaWeakHandler());
-  PP.AddPragmaHandler(WeakHandler.get());
+  if (!IsTemporary)
+    PP.AddPragmaHandler(WeakHandler.get());
 
   RedefineExtnameHandler.reset(new PragmaRedefineExtnameHandler());
-  PP.AddPragmaHandler(RedefineExtnameHandler.get());
+  if (!IsTemporary)
+    PP.AddPragmaHandler(RedefineExtnameHandler.get());
 
   FPContractHandler.reset(new PragmaFPContractHandler());
-  PP.AddPragmaHandler("STDC", FPContractHandler.get());
+  if (!IsTemporary)
+    PP.AddPragmaHandler("STDC", FPContractHandler.get());
 
   if (getLangOpts().OpenCL) {
     OpenCLExtensionHandler.reset(new PragmaOpenCLExtensionHandler());
-    PP.AddPragmaHandler("OPENCL", OpenCLExtensionHandler.get());
-
-    PP.AddPragmaHandler("OPENCL", FPContractHandler.get());
+    if (!IsTemporary)
+      PP.AddPragmaHandler("OPENCL", OpenCLExtensionHandler.get());
+  
+    if (!IsTemporary)
+      PP.AddPragmaHandler("OPENCL", FPContractHandler.get());
   }
   if (getLangOpts().OpenMP)
     OpenMPHandler.reset(new PragmaOpenMPHandler());
@@ -110,9 +123,11 @@ Parser::Parser(Preprocessor &pp, Sema &actions, bool skipFunctionBodies)
   }
 
   CommentSemaHandler.reset(new ActionCommentHandler(actions));
-  PP.addCommentHandler(CommentSemaHandler.get());
+  if (!IsTemporary)
+    PP.addCommentHandler(CommentSemaHandler.get());
 
-  PP.setCodeCompletionHandler(*this);
+  if (!IsTemporary)
+    PP.setCodeCompletionHandler(*this);
 }
 
 DiagnosticBuilder Parser::Diag(SourceLocation Loc, unsigned DiagID) {
@@ -415,13 +430,16 @@ Parser::ParseScopeFlags::~ParseScopeFlags() {
 
 Parser::~Parser() {
   // If we still have scopes active, delete the scope tree.
+  if (!IsTemporary) {
   delete getCurScope();
   Actions.CurScope = 0;
-  
+  }
+
   // Free the scope cache.
   for (unsigned i = 0, e = NumCachedScopes; i != e; ++i)
     delete ScopeCache[i];
 
+  if (!IsTemporary) {
   // Remove the pragma handlers we installed.
   PP.RemovePragmaHandler(AlignHandler.get());
   AlignHandler.reset();
@@ -461,6 +479,7 @@ Parser::~Parser() {
   PP.removeCommentHandler(CommentSemaHandler.get());
 
   PP.clearCodeCompletionHandler();
+  } // if !IsTemporary
 
   assert(TemplateIds.empty() && "Still alive TemplateIdAnnotations around?");
 }
@@ -535,30 +554,10 @@ void Parser::Initialize() {
   ConsumeToken();
 }
 
-namespace {
-  /// \brief RAIIObject to destroy the contents of a SmallVector of
-  /// TemplateIdAnnotation pointers and clear the vector.
-  class DestroyTemplateIdAnnotationsRAIIObj {
-    SmallVectorImpl<TemplateIdAnnotation *> &Container;
-  public:
-    DestroyTemplateIdAnnotationsRAIIObj(SmallVectorImpl<TemplateIdAnnotation *>
-                                       &Container)
-      : Container(Container) {}
-
-    ~DestroyTemplateIdAnnotationsRAIIObj() {
-      for (SmallVectorImpl<TemplateIdAnnotation *>::iterator I =
-           Container.begin(), E = Container.end();
-           I != E; ++I)
-        (*I)->Destroy();
-      Container.clear();
-    }
-  };
-}
-
 /// ParseTopLevelDecl - Parse one top-level declaration, return whatever the
 /// action tells us to.  This returns true if the EOF was encountered.
 bool Parser::ParseTopLevelDecl(DeclGroupPtrTy &Result) {
-  DestroyTemplateIdAnnotationsRAIIObj CleanupRAII(TemplateIds);
+  DestroyTemplateIdAnnotationsRAIIObj CleanupRAII(*this);
 
   // Skip over the EOF token, flagging end of previous input for incremental 
   // processing
@@ -573,9 +572,7 @@ bool Parser::ParseTopLevelDecl(DeclGroupPtrTy &Result) {
     // Late template parsing can begin.
     if (getLangOpts().DelayedTemplateParsing)
       Actions.SetLateTemplateParser(LateTemplateParserCallback, this);
-    if (!PP.isIncrementalProcessingEnabled())
-      Actions.ActOnEndOfTranslationUnit();
-    //else don't tell Sema that we ended parsing: more input might come.
+    Actions.ActOnEndOfTranslationUnit();
 
     return true;
   }
@@ -614,7 +611,7 @@ bool Parser::ParseTopLevelDecl(DeclGroupPtrTy &Result) {
 Parser::DeclGroupPtrTy
 Parser::ParseExternalDeclaration(ParsedAttributesWithRange &attrs,
                                  ParsingDeclSpec *DS) {
-  DestroyTemplateIdAnnotationsRAIIObj CleanupRAII(TemplateIds);
+  DestroyTemplateIdAnnotationsRAIIObj CleanupRAII(*this);
   ParenBraceBracketBalancer BalancerRAIIObj(*this);
 
   if (PP.isCodeCompletionReached()) {
