@@ -1179,7 +1179,8 @@ void ItaniumVTableBuilder::ComputeThisAdjustments() {
       continue;
     }
 
-    if (MD->getParent() == MostDerivedClass)
+    if (MD->getParent()->getCanonicalDecl()
+        == MostDerivedClass->getCanonicalDecl())
       AddThunk(MD, Thunk);
   }
 }
@@ -1366,7 +1367,8 @@ bool ItaniumVTableBuilder::IsOverriderUsed(
   
   // If the overrider is the first base in the primary base chain, we know
   // that the overrider will be used.
-  if (Overrider->getParent() == FirstBaseInPrimaryBaseChain)
+  if (Overrider->getParent()->getCanonicalDecl()
+      == FirstBaseInPrimaryBaseChain->getCanonicalDecl())
     return true;
 
   ItaniumVTableBuilder::PrimaryBasesSetVectorTy PrimaryBases;
@@ -1429,7 +1431,8 @@ FindNearestOverriddenMethod(const CXXMethodDecl *MD,
     // Now check the overridden methods.
     for (const CXXMethodDecl *OverriddenMD : OverriddenMethods) {
       // We found our overridden method.
-      if (OverriddenMD->getParent() == PrimaryBase)
+      if (OverriddenMD->getParent()->getCanonicalDecl()
+          == PrimaryBase->getCanonicalDecl())
         return OverriddenMD;
     }
   }
@@ -1536,7 +1539,8 @@ void ItaniumVTableBuilder::AddMethods(
                                   Overrider);
 
           if (ThisAdjustment.Virtual.Itanium.VCallOffsetOffset &&
-              Overrider.Method->getParent() == MostDerivedClass) {
+              Overrider.Method->getParent()->getCanonicalDecl()
+              == MostDerivedClass->getCanonicalDecl()) {
 
             // There's no return adjustment from OverriddenMD and MD,
             // but that doesn't mean there isn't one between MD and
