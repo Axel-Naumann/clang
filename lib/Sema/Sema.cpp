@@ -664,7 +664,8 @@ void Sema::ActOnEndOfTranslationUnit() {
 
   if (TUKind == TU_Prefix) {
     // Translation unit prefixes don't need any of the checking below.
-    TUScope = nullptr;
+    if (!PP.isIncrementalProcessingEnabled())
+      TUScope = nullptr;
     return;
   }
 
@@ -844,7 +845,8 @@ void Sema::ActOnEndOfTranslationUnit() {
   assert(ParsingInitForAutoVars.empty() &&
          "Didn't unmark var as having its initializer parsed");
 
-  TUScope = nullptr;
+  if (!PP.isIncrementalProcessingEnabled())
+    TUScope = nullptr;
 }
 
 
