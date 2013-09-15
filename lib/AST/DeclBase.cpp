@@ -1153,11 +1153,15 @@ void DeclContext::removeDecl(Decl *D) {
     if (!Map) return;
 
     StoredDeclsMap::iterator Pos = Map->find(ND->getDeclName());
+#ifdef NDEBUG
     assert(Pos != Map->end() && "no lookup entry for decl");
+#endif
+    if (Pos != Map->end()) {
     StoredDeclsList::DeclsTy* Vec = Pos->second.getAsVector();
     if ((Vec && std::find(Vec->begin(), Vec->end(), ND) != Vec->end())
         || Pos->second.getAsDecl() == ND)
       Pos->second.remove(ND);
+    } // if (Pos != Map->end())
   }
 }
 
