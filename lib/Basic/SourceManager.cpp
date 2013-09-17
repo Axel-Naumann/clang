@@ -409,6 +409,14 @@ void SourceManager::clearIDTables() {
   createExpansionLoc(SourceLocation(),SourceLocation(),SourceLocation(), 1);
 }
 
+void SourceManager::invalidateCache(const FileEntry* Entry) {
+  if (ContentCache *&E = FileInfos[Entry]) {
+    E->replaceBuffer(0, /*free*/ true);
+    E = 0;
+  }
+  getFileManager().invalidateCache(Entry);
+}
+
 /// getOrCreateContentCache - Create or return a cached ContentCache for the
 /// specified file.
 const ContentCache *
