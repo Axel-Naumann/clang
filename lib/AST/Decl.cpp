@@ -909,15 +909,6 @@ static LinkageInfo getLVForClassMember(const NamedDecl *D,
   return LV;
 }
 
-static void clearLinkageForClass(const CXXRecordDecl *record) {
-  for (CXXRecordDecl::decl_iterator
-         i = record->decls_begin(), e = record->decls_end(); i != e; ++i) {
-    Decl *child = *i;
-    if (isa<NamedDecl>(child))
-      cast<NamedDecl>(child)->ClearLinkageCache();
-  }
-}
-
 void NamedDecl::anchor() { }
 
 static LinkageInfo computeLVForDecl(const NamedDecl *D,
@@ -929,42 +920,6 @@ bool NamedDecl::isLinkageValid() const {
 
   return computeLVForDecl(this, LVForLinkageOnly).getLinkage() ==
          getCachedLinkage();
-}
-
-void NamedDecl::ClearLinkageCache() {
-  // Note that we can't skip clearing the linkage of children just
-  // because the parent doesn't have cached linkage:  we don't cache
-  // when computing linkage for parent contexts.
-
-  HasCachedLinkage = 0;
-
-  // If we're changing the linkage of a class, we need to reset the
-  // linkage of child declarations, too.
-  if (const CXXRecordDecl *record = dyn_cast<CXXRecordDecl>(this))
-    clearLinkageForClass(record);
-
-  if (ClassTemplateDecl *temp =
-        dyn_cast<ClassTemplateDecl>(const_cast<NamedDecl*>(this))) {
-    // Clear linkage for the template pattern.
-    CXXRecordDecl *record = temp->getTemplatedDecl();
-    record->HasCachedLinkage = 0;
-    clearLinkageForClass(record);
-
-    // We need to clear linkage for specializations, too.
-    for (ClassTemplateDecl::spec_iterator
-           i = temp->spec_begin(), e = temp->spec_end(); i != e; ++i)
-      i->ClearLinkageCache();
-  }
-
-  // Clear cached linkage for function template decls, too.
-  if (FunctionTemplateDecl *temp =
-        dyn_cast<FunctionTemplateDecl>(const_cast<NamedDecl*>(this))) {
-    temp->getTemplatedDecl()->ClearLinkageCache();
-    for (FunctionTemplateDecl::spec_iterator
-           i = temp->spec_begin(), e = temp->spec_end(); i != e; ++i)
-      i->ClearLinkageCache();
-  }
-    
 }
 
 Linkage NamedDecl::getLinkageInternal() const {

@@ -227,9 +227,6 @@ public:
     return clang::getFormalLinkage(getLinkageInternal());
   }
 
-  /// \brief Force a reevaluation of the kind of linkage this entity has.
-  void ClearLinkageCache();
-
   /// \brief True if this decl has external linkage.
   bool hasExternalFormalLinkage() const {
     return isExternalFormalLinkage(getLinkageInternal());
