@@ -1152,8 +1152,8 @@ void DeclContext::removeDecl(Decl *D) {
   if (isa<NamedDecl>(D)) {
     NamedDecl *ND = cast<NamedDecl>(D);
 
-    // Remove only decls that have a name
-    if (!ND->getDeclName()) return;
+    // Remove only decls that have a name or registered in the lookup.
+    if (!ND->getDeclName() || ND->isHidden()) return;
 
     StoredDeclsMap *Map = D->getDeclContext()->getPrimaryContext()->LookupPtr.getPointer();
     if (!Map) return;
