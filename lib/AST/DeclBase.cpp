@@ -1155,7 +1155,7 @@ void DeclContext::removeDecl(Decl *D) {
     // Remove only decls that have a name
     if (!ND->getDeclName()) return;
 
-    StoredDeclsMap *Map = getPrimaryContext()->LookupPtr.getPointer();
+    StoredDeclsMap *Map = D->getDeclContext()->getPrimaryContext()->LookupPtr.getPointer();
     if (!Map) return;
 
     StoredDeclsMap::iterator Pos = Map->find(ND->getDeclName());
