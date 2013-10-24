@@ -3611,13 +3611,15 @@ public:
 class SubstTemplateTypeParmType : public Type, public llvm::FoldingSetNode {
   // The original type parameter.
   const TemplateTypeParmType *Replaced;
+  QualType Replacement;
 
-  SubstTemplateTypeParmType(const TemplateTypeParmType *Param, QualType Canon)
+  SubstTemplateTypeParmType(const TemplateTypeParmType *Param,
+                            QualType ReplacementType, QualType Canon)
     : Type(SubstTemplateTypeParm, Canon, Canon->isDependentType(),
            Canon->isInstantiationDependentType(),
            Canon->isVariablyModifiedType(),
            Canon->containsUnexpandedParameterPack()),
-      Replaced(Param) { }
+      Replaced(Param), Replacement(ReplacementType) { }
 
   friend class ASTContext;
 
@@ -3630,7 +3632,7 @@ public:
   /// Gets the type that was substituted for the template
   /// parameter.
   QualType getReplacementType() const {
-    return getCanonicalTypeInternal();
+    return Replacement;
   }
 
   bool isSugared() const { return true; }
