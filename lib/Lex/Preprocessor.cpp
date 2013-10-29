@@ -239,6 +239,33 @@ void Preprocessor::DumpMacro(const MacroInfo &MI) const {
   llvm::errs() << "\n";
 }
 
+void Preprocessor::printMacro(const MacroInfo &MI, raw_ostream &OS) const {
+  OS << "MACRO: ";
+  for (unsigned i = 0, e = MI.getNumTokens(); i != e; ++i) {
+    const Token &Tok = MI.getReplacementToken(i);
+    OS << tok::getTokenName(Tok.getKind()) << " '"
+               << getSpelling(Tok) << "'";
+    OS << "\t";
+    if (Tok.isAtStartOfLine())
+      OS << " [StartOfLine]";
+    if (Tok.hasLeadingSpace())
+      OS << " [LeadingSpace]";
+    if (Tok.isExpandDisabled())
+      OS << " [ExpandDisabled]";
+    if (Tok.needsCleaning()) {
+      const char *Start = SourceMgr.getCharacterData(Tok.getLocation());
+      OS << " [UnClean='" << StringRef(Start, Tok.getLength())
+                 << "']";
+    }
+    //Do not print location it uses the SourceManager dump to llvm::errs.
+    //OS << "\tLoc=<";
+    //DumpLocation(Tok.getLocation());
+    //OS << ">";
+    OS<< "  ";
+  }
+  OS << "\n";
+}
+
 void Preprocessor::PrintStats() {
   llvm::errs() << "\n*** Preprocessor Stats:\n";
   llvm::errs() << NumDirectives << " directives found:\n";
@@ -467,6 +494,13 @@ Module *Preprocessor::getCurrentModule() {
     return nullptr;
 
   return getHeaderSearchInfo().lookupModule(getLangOpts().CurrentModule);
+}
+
+void Preprocessor::removeMacro(IdentifierInfo *II, const MacroDirective *MD) {
+  assert(II && MD);
+  assert(!MD->getPrevious() && "Already attached to a MacroDirective history.");
+
+  Macros.erase(II);
 }
 
 //===----------------------------------------------------------------------===//
@@ -858,3 +892,4 @@ void Preprocessor::createPreprocessingRecord() {
   Record = new PreprocessingRecord(getSourceManager());
   addPPCallbacks(std::unique_ptr<PPCallbacks>(Record));
 }
+
