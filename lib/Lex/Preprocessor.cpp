@@ -257,10 +257,10 @@ void Preprocessor::printMacro(const MacroInfo &MI, raw_ostream &OS) const {
       OS << " [UnClean='" << StringRef(Start, Tok.getLength())
                  << "']";
     }
-    //Do not print location it uses the SourceManager dump to llvm::errs.
-    //OS << "\tLoc=<";
-    //DumpLocation(Tok.getLocation());
-    //OS << ">";
+    Do not print location it uses the SourceManager dump to llvm::errs.
+    OS << "\tLoc=<";
+    DumpLocation(Tok.getLocation());
+    OS << ">";
     OS<< "  ";
   }
   OS << "\n";
@@ -504,7 +504,7 @@ void Preprocessor::removeMacro(IdentifierInfo *II, const MacroDirective *MD) {
   const MacroInfo* MI = MD->getMacroInfo();
   if (MI) {
     ReleaseMacroInfo(const_cast<MacroInfo*>(MI));
-  }  
+  }
 
   Macros.erase(II);
 }
@@ -898,4 +898,3 @@ void Preprocessor::createPreprocessingRecord() {
   Record = new PreprocessingRecord(getSourceManager());
   addPPCallbacks(std::unique_ptr<PPCallbacks>(Record));
 }
-
