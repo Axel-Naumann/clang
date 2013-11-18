@@ -594,6 +594,10 @@ public:
   /// it.
   PPCallbacks *getPPCallbacks() const { return Callbacks.get(); }
   void addPPCallbacks(std::unique_ptr<PPCallbacks> C) {
+    //FIXME: Hack to let us remove callbacks. Revisit.
+    if (!C) {
+      Callbacks.reset();
+    }
     if (Callbacks)
       C = llvm::make_unique<PPChainedCallbacks>(std::move(C),
                                                 std::move(Callbacks));
