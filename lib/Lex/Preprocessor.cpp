@@ -257,9 +257,9 @@ void Preprocessor::printMacro(const MacroInfo &MI, raw_ostream &OS) const {
       OS << " [UnClean='" << StringRef(Start, Tok.getLength())
                  << "']";
     }
-    Do not print location it uses the SourceManager dump to llvm::errs.
+    //Do not print location it uses the SourceManager dump to llvm::errs.
     OS << "\tLoc=<";
-    DumpLocation(Tok.getLocation());
+    Tok.getLocation().print(OS, SourceMgr);
     OS << ">";
     OS<< "  ";
   }
