@@ -273,7 +273,7 @@ const FileEntry *FileManager::getFile(StringRef Filename, bool openFile,
   FileEntry &UFE = UniqueRealFiles[Data.UniqueID];
 
   NamedFileEnt.setValue(&UFE);
-  if (UFE.isValid()) { // Already have an entry with this inode, return it.
+  if (UFE.isValid() && Data.ModTime == UFE.ModTime) { // Already have an entry with this inode, return it.
 
     // FIXME: this hack ensures that if we look up a file by a virtual path in
     // the VFS that the getDir() will have the virtual path, even if we found
