@@ -294,6 +294,12 @@ const FileEntry *FileManager::getFile(StringRef Filename, bool openFile,
     // multiple names.
     if (DirInfo != UFE.Dir && Data.IsVFSMapped)
       UFE.Dir = DirInfo;
+  }
+  if (UFE.isValid() && Data.ModTime == UFE.ModTime) {
+    // Already have an entry with this inode, return it.
+    // If the stat process opened the file, close it to avoid a FD leak.
+    if (F)
+      delete F;
 
     // Always update the name to use the last name by which a file was accessed.
     // FIXME: Neither this nor always using the first name is correct; we want
