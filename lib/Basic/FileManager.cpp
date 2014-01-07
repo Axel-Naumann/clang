@@ -273,7 +273,8 @@ const FileEntry *FileManager::getFile(StringRef Filename, bool openFile,
   FileEntry &UFE = UniqueRealFiles[Data.UniqueID];
 
   NamedFileEnt.setValue(&UFE);
-  if (UFE.isValid()) { // Already have an entry with this inode, return it.
+  if (UFE.isValid() && Data.ModTime == UFE.ModTime) {
+    // Already have an entry with this inode, return it.
     // If the stat process opened the file, close it to avoid a FD leak.
     if (F)
       delete F;
