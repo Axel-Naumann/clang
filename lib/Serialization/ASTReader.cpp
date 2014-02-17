@@ -1137,10 +1137,10 @@ resolveFileThroughHeaderSearch(Preprocessor& PP, StringRef Filename) {
              && "Mismatched partitioning of file name!");
       const DirectoryLookup* FoundDir = 0;
       const FileEntry* FE
-        = HdrSearch.LookupFile(trailingPart, true /*isAngled*/,
-                               0/*FromDir*/, FoundDir, 0/*CurFileEntry*/,
-                               0/*Searchpath*/, 0/*RelPath*/,
-                               0/*SuggModule*/);
+        = HdrSearch.LookupFile(trailingPart, SourceLocation(), true/*isAngled*/,
+                               0/*FromDir*/, FoundDir,
+                               ArrayRef<const FileEntry*>() /*Includers*/,
+                               0/*Searchpath*/, 0/*RelPath*/, 0/*SuggModule*/);
       if (FE)
         return FE->getName();
    }
