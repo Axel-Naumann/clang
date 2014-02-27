@@ -20,6 +20,7 @@
 namespace llvm {
   class LLVMContext;
   class Module;
+  class raw_ostream;
 }
 
 namespace clang {
@@ -35,6 +36,7 @@ namespace clang {
     virtual llvm::Module* GetModule() = 0;
     virtual llvm::Module* ReleaseModule() = 0;
     virtual const Decl *GetDeclForMangledName(llvm::StringRef MangledName) = 0;
+    virtual void print(llvm::raw_ostream& out) = 0;
   };
 
   /// CreateLLVMCodeGen - Create a CodeGenerator instance.
