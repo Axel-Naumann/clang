@@ -27,7 +27,7 @@
 #include <memory>
 using namespace clang;
 
-namespace {
+namespace clang {
   class CodeGeneratorImpl : public CodeGenerator {
     DiagnosticsEngine &Diags;
     ASTContext *Ctx;
