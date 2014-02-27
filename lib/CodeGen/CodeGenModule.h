@@ -47,32 +47,34 @@ class IndexedInstrProfReader;
 }
 
 namespace clang {
-class TargetCodeGenInfo;
-class ASTContext;
-class AtomicType;
-class FunctionDecl;
-class IdentifierInfo;
-class ObjCMethodDecl;
-class ObjCImplementationDecl;
-class ObjCCategoryImplDecl;
-class ObjCProtocolDecl;
-class ObjCEncodeExpr;
-class BlockExpr;
-class CharUnits;
-class Decl;
-class Expr;
-class Stmt;
-class InitListExpr;
-class StringLiteral;
-class NamedDecl;
-class ValueDecl;
-class VarDecl;
-class LangOptions;
-class CodeGenOptions;
-class DiagnosticsEngine;
-class AnnotateAttr;
-class CXXDestructorDecl;
-class Module;
+  class TargetCodeGenInfo;
+  class ASTContext;
+  class AtomicType;
+  class CodeGeneratorImpl; // hack needed by cling
+  class FunctionDecl;
+  class IdentifierInfo;
+  class ObjCMethodDecl;
+  class ObjCImplementationDecl;
+  class ObjCCategoryImplDecl;
+  class ObjCProtocolDecl;
+  class ObjCEncodeExpr;
+  class BlockExpr;
+  class CharUnits;
+  class Decl;
+  class Expr;
+  class Stmt;
+  class InitListExpr;
+  class StringLiteral;
+  class NamedDecl;
+  class ValueDecl;
+  class VarDecl;
+  class LangOptions;
+  class CodeGenOptions;
+  class DiagnosticsEngine;
+  class AnnotateAttr;
+  class CXXDestructorDecl;
+  class MangleBuffer;
+  class Module;
 
 namespace CodeGen {
 
@@ -1155,6 +1157,8 @@ private:
   /// Check whether we can use a "simpler", more core exceptions personality
   /// function.
   void SimplifyPersonality();
+
+   friend class clang::CodeGeneratorImpl; // hack needed by cling
 };
 }  // end namespace CodeGen
 }  // end namespace clang
