@@ -52,6 +52,7 @@ namespace clang {
     llvm::Module *ReleaseModule() override { return M.release(); }
 
     void print(llvm::raw_ostream& out) {
+      out << "\n\nCodeGen:\n";
       //llvm::SmallPtrSet<llvm::GlobalValue*, 10> WeakRefReferences;
       //llvm::StringMap<GlobalDecl> DeferredDecls;
       //std::vector<DeferredGlobal> DeferredDeclsToEmit;
@@ -66,7 +67,6 @@ namespace clang {
       //llvm::StringMap<llvm::Constant*> AnnotationStrings;
       //llvm::StringMap<llvm::Constant*> CFConstantStringMap;
       //llvm::StringMap<llvm::GlobalVariable*> ConstantStringMap;
-      out << "\n\nCodeGen:\n";
       out << " ConstantStringMap @ " << &Builder->ConstantStringMap << "\n";
       for(llvm::StringMap<llvm::GlobalVariable*>::const_iterator I
             = Builder->ConstantStringMap.begin(),
@@ -91,6 +91,17 @@ namespace clang {
       //SmallVector<llvm::Value *, 16> LinkerOptionsMetadata;
       //
       out.flush();
+    }
+
+    virtual void forgetGlobal(llvm::GlobalValue* GV) {
+      for(llvm::StringMap<llvm::GlobalVariable*>::iterator I
+            = Builder->ConstantStringMap.begin(),
+            E = Builder->ConstantStringMap.end(); I != E; ++I) {
+        if (I->getValue() == GV) {
+          Builder->ConstantStringMap.erase(I);
+          break;
+        }
+      }
     }
 
     void Initialize(ASTContext &Context) override {
