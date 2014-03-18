@@ -716,6 +716,8 @@ public:
 
   void clearIDTables();
 
+  void invalidateCache(const FileEntry* Entry);
+
   DiagnosticsEngine &getDiagnostics() const { return Diag; }
 
   FileManager &getFileManager() const { return FileMgr; }
