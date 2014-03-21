@@ -2333,8 +2333,9 @@ ASTReader::ReadControlBlock(ModuleFile &F,
 
       // All user input files reside at the index range [0, NumUserInputs), and
       // system input files reside at [NumUserInputs, NumInputs).
-      if (!DisableValidation) {
+        bool Validate = !DisableValidation;
         bool Complain = (ClientLoadCapabilities & ARR_OutOfDate) == 0;
+        Complain &= Validate;
 
         // If we are reading a module, we will create a verification timestamp,
         // so we verify all input files.  Otherwise, verify only user input
@@ -2347,9 +2348,11 @@ ASTReader::ReadControlBlock(ModuleFile &F,
              F.Kind == MK_ImplicitModule))
           N = NumInputs;
 
-        for (unsigned I = 0; I < N; ++I) {
+        for (unsigned I = 0; I < NumInputs; ++I) {
+          if (I == N)
+            Complain = false;
           InputFile IF = getInputFile(F, I+1, Complain);
-          if (!IF.getFile() || IF.isOutOfDate())
+          if (Validate && (!IF.getFile() || IF.isOutOfDate()))
             return OutOfDate;
         }
       }
