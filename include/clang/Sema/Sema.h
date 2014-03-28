@@ -8273,6 +8273,7 @@ protected:
   friend class InitializationSequence;
   friend class ASTReader;
   friend class ASTWriter;
+  friend class DeclUnloader;
 
 public:
   /// \brief Retrieve the parser's current scope.
