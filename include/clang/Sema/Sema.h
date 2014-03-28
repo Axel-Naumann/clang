@@ -9316,6 +9316,7 @@ protected:
   friend class ASTReader;
   friend class ASTDeclReader;
   friend class ASTWriter;
+  friend class DeclUnloader;
 
 public:
   /// Retrieve the keyword associated
