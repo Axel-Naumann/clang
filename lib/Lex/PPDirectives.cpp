@@ -620,7 +620,7 @@ const FileEntry *Preprocessor::LookupFile(
   // stack, record the parent #includes.
   SmallVector<std::pair<const FileEntry *, const DirectoryEntry *>, 16>
       Includers;
-  if (!FromDir && !FromFile) {
+  if (!FromDir && !FromFile && getCurrentFileLexer()) {
     FileID FID = getCurrentFileLexer()->getFileID();
     const FileEntry *FileEnt = SourceMgr.getFileEntryForID(FID);
 
