@@ -381,7 +381,8 @@ public:
       ArrayRef<std::pair<const FileEntry *, const DirectoryEntry *>> Includers,
       SmallVectorImpl<char> *SearchPath, SmallVectorImpl<char> *RelativePath,
       Module *RequestingModule, ModuleMap::KnownHeader *SuggestedModule,
-      bool SkipCache = false, bool BuildSystemModule = false);
+      bool SkipCache = false, bool BuildSystemModule = false,
+      bool OpenFile = true, bool CacheFailures = true);
 
   /// \brief Look up a subframework for the specified \#include file.
   ///
@@ -582,7 +583,8 @@ private:
   const FileEntry *
   getFileAndSuggestModule(StringRef FileName, const DirectoryEntry *Dir,
                           bool IsSystemHeaderDir, Module *RequestingModule,
-                          ModuleMap::KnownHeader *SuggestedModule);
+                          ModuleMap::KnownHeader *SuggestedModule,
+                          bool OpenFile = true, bool CacheFailures = true);
 
 public:
   /// \brief Retrieve the module map.
