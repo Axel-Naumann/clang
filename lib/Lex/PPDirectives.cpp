@@ -567,7 +567,9 @@ const FileEntry *Preprocessor::LookupFile(
     SmallVectorImpl<char> *SearchPath,
     SmallVectorImpl<char> *RelativePath,
     ModuleMap::KnownHeader *SuggestedModule,
-    bool SkipCache) {
+    bool SkipCache,
+    bool OpenFile,
+    bool CacheFailures) {
   // If the header lookup mechanism may be relative to the current inclusion
   // stack, record the parent #includes.
   SmallVector<const FileEntry *, 16> Includers;
@@ -605,7 +607,7 @@ const FileEntry *Preprocessor::LookupFile(
   CurDir = CurDirLookup;
   const FileEntry *FE = HeaderInfo.LookupFile(
       Filename, FilenameLoc, isAngled, FromDir, CurDir, Includers, SearchPath,
-      RelativePath, SuggestedModule, SkipCache);
+      RelativePath, SuggestedModule, SkipCache, OpenFile, CacheFailures);
   if (FE) {
     if (SuggestedModule && !LangOpts.AsmPreprocessor)
       HeaderInfo.getModuleMap().diagnoseHeaderInclusion(
