@@ -607,7 +607,9 @@ const FileEntry *Preprocessor::LookupFile(
     SmallVectorImpl<char> *SearchPath,
     SmallVectorImpl<char> *RelativePath,
     ModuleMap::KnownHeader *SuggestedModule,
-    bool SkipCache) {
+    bool SkipCache,
+    bool OpenFile,
+    bool CacheFailures) {
   Module *RequestingModule = getModuleForLocation(FilenameLoc); 
   bool RequestingModuleIsModuleInterface = !SourceMgr.isInMainFile(FilenameLoc);
 
@@ -680,7 +682,8 @@ const FileEntry *Preprocessor::LookupFile(
   // Do a standard file entry lookup.
   const FileEntry *FE = HeaderInfo.LookupFile(
       Filename, FilenameLoc, isAngled, FromDir, CurDir, Includers, SearchPath,
-      RelativePath, RequestingModule, SuggestedModule, SkipCache);
+      RelativePath, RequestingModule, SuggestedModule, SkipCache,
+      OpenFile, CacheFailures);
   if (FE) {
     if (SuggestedModule && !LangOpts.AsmPreprocessor)
       HeaderInfo.getModuleMap().diagnoseHeaderInclusion(
