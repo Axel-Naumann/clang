@@ -576,7 +576,8 @@ const FileEntry *HeaderSearch::LookupFile(
     const DirectoryLookup *FromDir, const DirectoryLookup *&CurDir,
     ArrayRef<std::pair<const FileEntry *, const DirectoryEntry *>> Includers,
     SmallVectorImpl<char> *SearchPath, SmallVectorImpl<char> *RelativePath,
-    ModuleMap::KnownHeader *SuggestedModule, bool SkipCache) {
+    ModuleMap::KnownHeader *SuggestedModule, bool SkipCache,
+    bool OpenFile, bool CacheFailures) {
   if (SuggestedModule)
     *SuggestedModule = ModuleMap::KnownHeader();
     
@@ -594,7 +595,7 @@ const FileEntry *HeaderSearch::LookupFile(
       RelativePath->append(Filename.begin(), Filename.end());
     }
     // Otherwise, just return the file.
-    return FileMgr.getFile(Filename, /*openFile=*/true);
+    return FileMgr.getFile(Filename, OpenFile, CacheFailures);
   }
 
   // This is the header that MSVC's header search would have found.
@@ -627,9 +628,8 @@ const FileEntry *HeaderSearch::LookupFile(
       // building a [system] module.
       bool IncluderIsSystemHeader =
           Includer && getFileInfo(Includer).DirInfo != SrcMgr::C_User;
-      if (const FileEntry *FE = getFileAndSuggestModule(
-              *this, TmpDir.str(), IncluderAndDir.second,
-              IncluderIsSystemHeader, SuggestedModule)) {
+      if (const FileEntry *FE =
+          FileMgr.getFile(TmpDir.str(), OpenFile, CacheFailures)) {
         if (!Includer) {
           assert(First && "only first includer can have no file");
           return FE;

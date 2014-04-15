@@ -393,7 +393,8 @@ public:
       const DirectoryLookup *FromDir, const DirectoryLookup *&CurDir,
       ArrayRef<std::pair<const FileEntry *, const DirectoryEntry *>> Includers,
       SmallVectorImpl<char> *SearchPath, SmallVectorImpl<char> *RelativePath,
-      ModuleMap::KnownHeader *SuggestedModule, bool SkipCache = false);
+      ModuleMap::KnownHeader *SuggestedModule, bool SkipCache = false,
+      bool OpenFile = true, bool CacheFailures = true);
 
   /// \brief Look up a subframework for the specified \#include file.
   ///
