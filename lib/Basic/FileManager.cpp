@@ -223,7 +223,7 @@ const FileEntry *FileManager::getFile(StringRef Filename, bool openFile,
 
   const FileEntry *StaleFileEntry = 0;
   bool needsRereading = false;
-  if (NamedFileEnt.getValue()) {
+  if (NamedFileEnt.getValue() && NamedFileEnt.getValue() != NON_EXISTENT_FILE) {
     std::set<const FileEntry*>::const_iterator found
       = FileEntriesToReread.find(NamedFileEnt.getValue());
     if (found != FileEntriesToReread.end()) {
@@ -504,6 +504,7 @@ bool FileManager::getNoncachedStatValue(StringRef Path,
 
 void FileManager::invalidateCache(FileEntry *Entry) {
   assert(Entry && "Cannot invalidate a NULL FileEntry");
+  assert(Entry != NON_EXISTENT_FILE && "Cannot invalidate a missing FileEntry");
   FileEntriesToReread.insert(Entry);
   Entry->IsValid = false;
 }
