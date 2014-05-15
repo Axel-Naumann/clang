@@ -278,7 +278,8 @@ const FileEntry *DirectoryLookup::LookupFile(
     ModuleMap::KnownHeader *SuggestedModule,
     bool &InUserSpecifiedSystemFramework,
     bool &HasBeenMapped,
-    SmallVectorImpl<char> &MappedName) const {
+    SmallVectorImpl<char> &MappedName,
+    bool OpenFile) const {
   InUserSpecifiedSystemFramework = false;
   HasBeenMapped = false;
 
@@ -296,10 +297,25 @@ const FileEntry *DirectoryLookup::LookupFile(
       RelativePath->clear();
       RelativePath->append(Filename.begin(), Filename.end());
     }
-
-    return getFileAndSuggestModule(HS, TmpDir.str(), getDir(),
-                                   isSystemHeaderDirectory(),
-                                   SuggestedModule);
+    
+    // If we have a module map that might map this header, load it and
+    // check whether we'll have a suggestion for a module.
+    HS.hasModuleMap(TmpDir, getDir(), isSystemHeaderDirectory());
+    if (SuggestedModule) {
+      const FileEntry *File = HS.getFileMgr().getFile(TmpDir.str(),
+                                                      /*openFile=*/false);
+      if (!File)
+        return File;
+      
+      // If there is a module that corresponds to this header, suggest it.
+      *SuggestedModule = HS.findModuleForHeader(File);
+      if (!SuggestedModule->getModule() &&
+          HS.hasModuleMap(TmpDir, getDir(), isSystemHeaderDirectory()))
+        *SuggestedModule = HS.findModuleForHeader(File);
+      return File;
+    }
+    
+    return HS.getFileMgr().getFile(TmpDir.str(), OpenFile);
   }
 
   if (isFramework())
@@ -326,7 +342,7 @@ const FileEntry *DirectoryLookup::LookupFile(
     Result = HM->LookupFile(Filename, HS.getFileMgr());
 
   } else {
-    Result = HS.getFileMgr().getFile(Dest);
+    Result = HS.getFileMgr().getFile(Dest, OpenFile);
   }
 
   if (Result) {
@@ -721,7 +737,7 @@ const FileEntry *HeaderSearch::LookupFile(
     const FileEntry *FE =
       SearchDirs[i].LookupFile(Filename, *this, SearchPath, RelativePath,
                                SuggestedModule, InUserSpecifiedSystemFramework,
-                               HasBeenMapped, MappedName);
+                               HasBeenMapped, MappedName, OpenFile);
     if (HasBeenMapped) {
       CacheLookup.MappedName =
           copyString(Filename, LookupFileCache.getAllocator());
