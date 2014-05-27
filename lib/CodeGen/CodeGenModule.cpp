@@ -721,6 +721,8 @@ void CodeGenModule::AddGlobalDtor(llvm::Function *Dtor, int Priority) {
 }
 
 void CodeGenModule::EmitCtorList(CtorList &Fns, const char *GlobalName) {
+  if (Fns.empty())
+    return;
   // Ctor function type is void()*.
   llvm::FunctionType* CtorFTy = llvm::FunctionType::get(VoidTy, false);
   llvm::Type *CtorPFTy = llvm::PointerType::getUnqual(CtorFTy);
@@ -729,8 +731,23 @@ void CodeGenModule::EmitCtorList(CtorList &Fns, const char *GlobalName) {
   llvm::StructType *CtorStructTy = llvm::StructType::get(
       Int32Ty, llvm::PointerType::getUnqual(CtorFTy), VoidPtrTy, nullptr);
 
+
   // Construct the constructor and destructor arrays.
   SmallVector<llvm::Constant *, 8> Ctors;
+
+  // Add existing ones:
+  if (llvm::GlobalVariable* OldGlobal
+      = TheModule.getGlobalVariable(GlobalName, true)) {
+    if (const llvm::ConstantArray* CArr =
+        llvm::dyn_cast<llvm::ConstantArray>(OldGlobal->getInitializer())) {
+      uint64_t OldSize = CArr->getType()->getNumElements();
+      for (uint64_t Idx = 0; Idx < OldSize; ++Idx) {
+        Ctors.push_back(CArr->getAggregateElement(Idx));
+      }
+    }
+    OldGlobal->eraseFromParent();
+  }
+
   for (const auto &I : Fns) {
     llvm::Constant *S[] = {
         llvm::ConstantInt::get(Int32Ty, I.Priority, false),
