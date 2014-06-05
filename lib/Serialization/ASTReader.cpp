@@ -2159,7 +2159,8 @@ InputFile ASTReader::getInputFile(ModuleFile &F, unsigned ID, bool Complain) {
           File = FileMgr.getFile(PPResolved);
       }
     }
-    
+  }
+  }
     // For an overridden file, create a virtual file with the stored
     // size/timestamp.
     if (Overridden && File == 0) {

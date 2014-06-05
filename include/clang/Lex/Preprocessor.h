@@ -762,7 +762,8 @@ public:
   public:
     CleanupAndRestoreCacheRAII(Preprocessor &PP)
       : PP(PP), SavedCachedLexPos(PP.CachedLexPos), 
-        SavedCachedTokens(PP.CachedTokens), SavedStack(PP.IncludeMacroStack),
+        SavedCachedTokens(PP.CachedTokens),
+        SavedStack(std::move(PP.IncludeMacroStack)),
         SavedCurLexer(PP.CurLexer.release()), 
         SavedCurPTHLexer(PP.CurPTHLexer.release()),
         SavedCurPPLexer(PP.CurPPLexer), 
@@ -788,7 +789,7 @@ public:
       //ExitCachingLexMode();
       PP.CachedLexPos = SavedCachedLexPos;
       PP.CachedTokens = SavedCachedTokens;
-      PP.IncludeMacroStack = SavedStack;
+      PP.IncludeMacroStack = std::move(SavedStack);
       PP.CurLexer.reset(SavedCurLexer);
       PP.CurPTHLexer.reset(SavedCurPTHLexer);
       PP.CurPPLexer = SavedCurPPLexer;

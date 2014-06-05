@@ -306,19 +306,13 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
     break;
   case llvm::Triple::RTEMS:
     break;
-<<<<<<< HEAD
   case llvm::Triple::Win32:
     switch (triple.getEnvironment()) {
     default: llvm_unreachable("Include management is handled in the driver.");
     case llvm::Triple::Cygnus:
       AddPath("/usr/include/w32api", System, false);
       break;
-  case llvm::Triple::Cygwin:
-    // The headers in w32api/ are not cygwin-compatible (but native)
-    //AddPath("/usr/include/w32api", System, false);
-    break;
     case llvm::Triple::GNU:
-    case llvm::Triple::MinGW32: {
       // mingw-w64 crt include paths
       // <sysroot>/i686-w64-mingw32/include
       SmallString<128> P = StringRef(HSOpts.ResourceDir);
@@ -341,6 +335,10 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
 #endif
       break;
     }
+    break;
+  case llvm::Triple::Cygwin:
+    // The headers in w32api/ are not cygwin-compatible (but native)
+    //AddPath("/usr/include/w32api", System, false);
     break;
   default:
     break;

@@ -130,7 +130,7 @@ namespace clang {
       out << &Builder->GlobalCtors << "\n";
       for(auto I = Builder->GlobalCtors.begin(),
             E = Builder->GlobalCtors.end(); I != E; ++I) {
-        out << (*I).first << " : " << (*I).second;
+        out << I->Initializer << " : " << I->AssociatedData;
         out << "\n";
       }
 
@@ -139,7 +139,7 @@ namespace clang {
       out << &Builder->GlobalDtors << "\n";
       for(auto I = Builder->GlobalDtors.begin(),
             E = Builder->GlobalDtors.end(); I != E; ++I) {
-        out << (*I).first << " : " << (*I).second;
+        out << I->Initializer << " : " << I->AssociatedData;
         out << "\n";
       }
 
@@ -148,14 +148,33 @@ namespace clang {
       //llvm::StringMap<llvm::Constant*> AnnotationStrings;
       //llvm::StringMap<llvm::Constant*> CFConstantStringMap;
       //llvm::StringMap<llvm::GlobalVariable*> ConstantStringMap;
-      out << " ConstantStringMap (llvm::StringMap<llvm::GlobalVariable*>) @ ";
-      out << &Builder->ConstantStringMap << "\n";
-      for(auto I = Builder->ConstantStringMap.begin(),
-            E = Builder->ConstantStringMap.end(); I != E; ++I) {
+      out << " Constant1ByteStringMap (llvm::StringMap<llvm::GlobalVariable*>) @ ";
+      out << &Builder->Constant1ByteStringMap << "\n";
+      for(auto I = Builder->Constant1ByteStringMap.begin(),
+            E = Builder->Constant1ByteStringMap.end(); I != E; ++I) {
         out << I->getKey().str().c_str();
         I->getValue()->print(out);
         out << "\n";
       }
+
+      out << " Constant2ByteStringMap (llvm::StringMap<llvm::GlobalVariable*>) @ ";
+      out << &Builder->Constant2ByteStringMap << "\n";
+      for(auto I = Builder->Constant2ByteStringMap.begin(),
+            E = Builder->Constant2ByteStringMap.end(); I != E; ++I) {
+        out << I->getKey().str().c_str();
+        I->getValue()->print(out);
+        out << "\n";
+      }
+
+      out << " Constant4ByteStringMap (llvm::StringMap<llvm::GlobalVariable*>) @ ";
+      out << &Builder->Constant4ByteStringMap << "\n";
+      for(auto I = Builder->Constant4ByteStringMap.begin(),
+            E = Builder->Constant4ByteStringMap.end(); I != E; ++I) {
+        out << I->getKey().str().c_str();
+        I->getValue()->print(out);
+        out << "\n";
+      }
+
       //llvm::DenseMap<const Decl*, llvm::Constant *> StaticLocalDeclMap;
       //llvm::DenseMap<const Decl*, llvm::GlobalVariable*> StaticLocalDeclGuardMap;
       //llvm::DenseMap<const Expr*, llvm::Constant *> MaterializedGlobalTemporaryMap;
@@ -178,10 +197,28 @@ namespace clang {
 
     virtual void forgetGlobal(llvm::GlobalValue* GV) {
       for(llvm::StringMap<llvm::GlobalVariable*>::iterator I
-            = Builder->ConstantStringMap.begin(),
-            E = Builder->ConstantStringMap.end(); I != E; ++I) {
+            = Builder->Constant1ByteStringMap.begin(),
+            E = Builder->Constant1ByteStringMap.end(); I != E; ++I) {
         if (I->getValue() == GV) {
-          Builder->ConstantStringMap.erase(I);
+          Builder->Constant1ByteStringMap.erase(I);
+          break;
+        }
+      }
+
+      for(llvm::StringMap<llvm::GlobalVariable*>::iterator I
+            = Builder->Constant2ByteStringMap.begin(),
+            E = Builder->Constant2ByteStringMap.end(); I != E; ++I) {
+        if (I->getValue() == GV) {
+          Builder->Constant2ByteStringMap.erase(I);
+          break;
+        }
+      }
+
+      for(llvm::StringMap<llvm::GlobalVariable*>::iterator I
+            = Builder->Constant4ByteStringMap.begin(),
+            E = Builder->Constant4ByteStringMap.end(); I != E; ++I) {
+        if (I->getValue() == GV) {
+          Builder->Constant4ByteStringMap.erase(I);
           break;
         }
       }

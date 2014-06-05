@@ -179,7 +179,7 @@ void ModuleManager::removeModules(ModuleIterator first, ModuleIterator last,
     }
 
     if (Ancestors.count(*victim))
-      FileMgr.invalidateCache((*victim)->File);
+      FileMgr.invalidateCache(const_cast<FileEntry*>((*victim)->File));
 
     delete *victim;
   }
