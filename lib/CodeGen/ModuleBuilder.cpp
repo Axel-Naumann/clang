@@ -187,6 +187,14 @@ namespace clang {
       //llvm::StringMap<llvm::Constant*> AnnotationStrings;
       //llvm::StringMap<llvm::Constant*> CFConstantStringMap;
       //llvm::StringMap<llvm::GlobalVariable*> ConstantStringMap;
+      out << " ConstantStringMap (llvm::DenseMap<llvm::Constant *, llvm::GlobalVariable *>) @ ";
+      out << &Builder->ConstantStringMap << "\n";
+      for(auto I = Builder->ConstantStringMap.begin(),
+            E = Builder->ConstantStringMap.end(); I != E; ++I) {
+        I->first->print(out);
+        I->second->print(out);
+        out << "\n";
+      }
 
       //llvm::DenseMap<const Decl*, llvm::Constant *> StaticLocalDeclMap;
       //llvm::DenseMap<const Decl*, llvm::GlobalVariable*> StaticLocalDeclGuardMap;
