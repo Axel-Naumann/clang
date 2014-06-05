@@ -793,10 +793,10 @@ public:
     CleanupAndRestoreCacheRAII(Preprocessor &PP)
       : PP(PP), SavedCachedLexPos(PP.CachedLexPos), 
         SavedCachedTokens(PP.CachedTokens), SavedStack(PP.IncludeMacroStack),
-        SavedCurLexer(PP.CurLexer.take()), 
-        SavedCurPTHLexer(PP.CurPTHLexer.take()),
+        SavedCurLexer(PP.CurLexer.release()), 
+        SavedCurPTHLexer(PP.CurPTHLexer.release()),
         SavedCurPPLexer(PP.CurPPLexer), 
-        SavedCurTokenLexer(PP.CurTokenLexer.take()),
+        SavedCurTokenLexer(PP.CurTokenLexer.release()),
         SavedCurDirLookup(PP.CurDirLookup),
         SavedCurLexerKind(PP.CurLexerKind)
     {

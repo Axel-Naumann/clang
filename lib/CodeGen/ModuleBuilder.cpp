@@ -91,7 +91,7 @@ namespace clang {
     llvm::Module *ReleaseModule() override {
       assert(M && "Releasing 0?");
       Builder->Release();
-      return M.take();
+      return M.release();
     }
 
     void print(llvm::raw_ostream& out) {
