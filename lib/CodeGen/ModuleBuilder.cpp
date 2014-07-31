@@ -79,8 +79,6 @@ namespace clang {
 
     llvm::Module *ReleaseModule() override { return M.release(); }
 
-    void Initialize(ASTContext &Context) override {
-
     void print(llvm::raw_ostream& out) {
       out << "\n\nCodeGen:\n";
       //llvm::SmallPtrSet<llvm::GlobalValue*, 10> WeakRefReferences;
@@ -97,8 +95,8 @@ namespace clang {
       out << &Builder->DeferredDecls << "\n";
       for(auto I = Builder->DeferredDecls.begin(),
             E = Builder->DeferredDecls.end(); I != E; ++I) {
-        out << I->getKey().str().c_str();
-        I->getValue().getDecl()->print(out);
+        out << I->first.str().c_str();
+        I->second.getDecl()->print(out);
         out << "\n";
       }
 
@@ -156,7 +154,7 @@ namespace clang {
       out << &Builder->GlobalCtors << "\n";
       for(auto I = Builder->GlobalCtors.begin(),
             E = Builder->GlobalCtors.end(); I != E; ++I) {
-        out << (*I).first << " : " << (*I).second;
+        out << I->Initializer << " : " << I->AssociatedData;
         out << "\n";
       }
 
@@ -165,7 +163,7 @@ namespace clang {
       out << &Builder->GlobalDtors << "\n";
       for(auto I = Builder->GlobalDtors.begin(),
             E = Builder->GlobalDtors.end(); I != E; ++I) {
-        out << (*I).first << " : " << (*I).second;
+        out << I->Initializer << " : " << I->AssociatedData;
         out << "\n";
       }
 
@@ -174,14 +172,7 @@ namespace clang {
       //llvm::StringMap<llvm::Constant*> AnnotationStrings;
       //llvm::StringMap<llvm::Constant*> CFConstantStringMap;
       //llvm::StringMap<llvm::GlobalVariable*> ConstantStringMap;
-      out << " ConstantStringMap (llvm::StringMap<llvm::GlobalVariable*>) @ ";
-      out << &Builder->ConstantStringMap << "\n";
-      for(auto I = Builder->ConstantStringMap.begin(),
-            E = Builder->ConstantStringMap.end(); I != E; ++I) {
-        out << I->getKey().str().c_str();
-        I->getValue()->print(out);
-        out << "\n";
-      }
+
       //llvm::DenseMap<const Decl*, llvm::Constant *> StaticLocalDeclMap;
       //llvm::DenseMap<const Decl*, llvm::GlobalVariable*> StaticLocalDeclGuardMap;
       //llvm::DenseMap<const Expr*, llvm::Constant *> MaterializedGlobalTemporaryMap;
@@ -203,18 +194,16 @@ namespace clang {
     }
 
     virtual void forgetGlobal(llvm::GlobalValue* GV) {
-      for(llvm::StringMap<llvm::GlobalVariable*>::iterator I
-            = Builder->ConstantStringMap.begin(),
+      for(auto I = Builder->ConstantStringMap.begin(),
             E = Builder->ConstantStringMap.end(); I != E; ++I) {
-        if (I->getValue() == GV) {
+        if (I->second == GV) {
           Builder->ConstantStringMap.erase(I);
           break;
         }
       }
     }
 
-
-    virtual void Initialize(ASTContext &Context) {
+    void Initialize(ASTContext &Context) override {
       Ctx = &Context;
 
       M->setTargetTriple(Ctx->getTargetInfo().getTriple().getTriple());
