@@ -210,7 +210,7 @@ void ModuleManager::removeModules(
     // rebuilt (or there was an error). Invalidate them so that we can load the
     // new files that will be renamed over the old ones.
     if (LoadedSuccessfully.count(*victim) == 0)
-      FileMgr.invalidateCache((*victim)->File);
+      FileMgr.invalidateCache(const_cast<FileEntry*>((*victim)->File));
 
     delete *victim;
   }

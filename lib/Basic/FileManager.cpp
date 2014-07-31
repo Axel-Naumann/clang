@@ -308,6 +308,11 @@ const FileEntry *FileManager::getFile(StringRef Filename, bool openFile,
       UFE.Dir = DirInfo;
   }
   if (UFE.isValid() && Data.ModTime == UFE.ModTime) {
+
+#pragma warning ("rebase?!")
+// The patch titled:
+// Adapt to newest llvm. Disable on of the ROOT patches in clang modules.
+// removed the following five lines:
     // Already have an entry with this inode, return it.
     // If the stat process opened the file, close it to avoid a FD leak.
     if (F)
