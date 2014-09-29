@@ -970,7 +970,9 @@ static void emitUsed(CodeGenModule &CGM, StringRef Name,
 
 void CodeGenModule::emitLLVMUsed() {
   emitUsed(*this, "llvm.used", LLVMUsed);
+  LLVMUsed.clear();
   emitUsed(*this, "llvm.compiler.used", LLVMCompilerUsed);
+  LLVMCompilerUsed.clear();
 }
 
 void CodeGenModule::AppendLinkerOptions(StringRef Opts) {
