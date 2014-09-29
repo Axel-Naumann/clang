@@ -23,6 +23,12 @@ ifeq ($(ENABLE_CLANG_ARCMT),1)
 PARALLEL_DIRS += Frontend libclang
 endif
 
+# If ENABLE_CLANG_ARCMT=0 we don't build libclang, thus we don't have this
+# target available.
+ifeq ($(ENABLE_CLANG_ARCMT),0)
+PARALLEL_DIRS := $(filter-out libclang, $(PARALLEL_DIRS))
+endif
+
 endif  # CLANG_LEVEL
 
 include $(CLANG_LEVEL)/Makefile
