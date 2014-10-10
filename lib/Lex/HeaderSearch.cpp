@@ -971,6 +971,10 @@ HeaderFileInfo &HeaderSearch::getFileInfo(const FileEntry *FE) {
       mergeHeaderFileInfo(*HFI, ExternalHFI);
   }
 
+  // Is the file open even though its content comes from an external source?
+  if (HFI->External && FE->File)
+    FE->closeFile();
+
   HFI->IsValid = true;
   // We have local information about this header file, so it's no longer
   // strictly external.
@@ -992,6 +996,11 @@ HeaderSearch::getExistingFileInfo(const FileEntry *FE,
     }
 
     HFI = &FileInfo[FE->getUID()];
+
+    // Is the file open even though its content comes from an external source?
+    if (HFI->External && FE->File)
+       FE->closeFile();
+
     if (!WantExternal && (!HFI->IsValid || HFI->External))
       return nullptr;
     if (!HFI->Resolved) {
