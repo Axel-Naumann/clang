@@ -83,6 +83,7 @@ public:
   }
 
   const char *getName() const { return Name; }
+  bool isOpen() const { return (bool)File; }
   bool isValid() const { return IsValid; }
   off_t getSize() const { return Size; }
   unsigned getUID() const { return UID; }
