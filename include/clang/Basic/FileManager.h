@@ -85,6 +85,7 @@ public:
 
   const char *getName() const { return Name; }
   StringRef tryGetRealPathName() const { return RealPathName; }
+  bool isOpen() const { return (bool)File; }
   bool isValid() const { return IsValid; }
   off_t getSize() const { return Size; }
   unsigned getUID() const { return UID; }
