@@ -532,6 +532,9 @@ private:
   /// been loaded.
   std::vector<MacroInfo *> MacrosLoaded;
 
+  /// \brief Token literal data loaded and owned by us.
+  std::vector<std::string *> TokenLiteralDataLoaded;
+
   typedef ContinuousRangeMap<serialization::MacroID, ModuleFile *, 4>
     GlobalMacroMapType;
 
