@@ -302,7 +302,7 @@ const FileEntry *DirectoryLookup::LookupFile(
     return HS.getFileAndSuggestModule(TmpDir, getDir(),
                                       isSystemHeaderDirectory(),
                                       RequestingModule, SuggestedModule,
-                                      OpenFile);
+                                      OpenFile, true /*CacheFailures*/);
   }
 
   if (isFramework())
