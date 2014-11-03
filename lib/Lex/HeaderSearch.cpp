@@ -245,13 +245,14 @@ static const FileEntry *
 getFileAndSuggestModule(HeaderSearch &HS, StringRef FileName,
                         const DirectoryEntry *Dir, bool IsSystemHeaderDir,
                         ModuleMap::KnownHeader *SuggestedModule,
-                        bool OpenFile) {
+                        bool OpenFile, bool CacheFailures) {
   // If we have a module map that might map this header, load it and
   // check whether we'll have a suggestion for a module.
   HS.hasModuleMap(FileName, Dir, IsSystemHeaderDir);
   if (SuggestedModule) {
     const FileEntry *File = HS.getFileMgr().getFile(FileName,
-                                                    /*OpenFile=*/false);
+                                                    /*OpenFile=*/false,
+                                                    CacheFailures);
     if (File) {
       // If there is a module that corresponds to this header, suggest it.
       *SuggestedModule = HS.findModuleForHeader(File);
@@ -266,7 +267,7 @@ getFileAndSuggestModule(HeaderSearch &HS, StringRef FileName,
     return File;
   }
 
-  return HS.getFileMgr().getFile(FileName, OpenFile);
+  return HS.getFileMgr().getFile(FileName, OpenFile, CacheFailures);
 }
 
 /// LookupFile - Lookup the specified file in this search path, returning it
@@ -301,7 +302,8 @@ const FileEntry *DirectoryLookup::LookupFile(
 
     return getFileAndSuggestModule(HS, TmpDir.str(), getDir(),
                                    isSystemHeaderDirectory(),
-                                   SuggestedModule, OpenFile);
+                                   SuggestedModule, OpenFile,
+                                   true /*CacheFailures*/);
   }
 
   if (isFramework())
@@ -633,7 +635,8 @@ const FileEntry *HeaderSearch::LookupFile(
       if (const FileEntry *FE =
               getFileAndSuggestModule(*this, TmpDir.str(), Includer->getDir(),
                                       IncluderIsSystemHeader,
-                                      SuggestedModule, OpenFile)) {
+                                      SuggestedModule, OpenFile,
+                                      CacheFailures)) {
         if (!Includer) {
           assert(First && "only first includer can have no file");
           return FE;
