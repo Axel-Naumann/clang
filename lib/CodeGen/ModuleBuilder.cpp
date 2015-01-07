@@ -94,6 +94,14 @@ namespace clang {
       return M.release();
     }
 
+    llvm::Module *StartModule(const std::string& ModuleName,
+                              llvm::LLVMContext& C) override {
+      assert(!M && "Replacing existing Module?");
+      M.reset(new llvm::Module(ModuleName, C));
+      Initialize(*Ctx);
+      return M.get();
+    }
+
     void print(llvm::raw_ostream& out) {
       out << "\n\nCodeGen:\n";
       //llvm::SmallPtrSet<llvm::GlobalValue*, 10> WeakRefReferences;
