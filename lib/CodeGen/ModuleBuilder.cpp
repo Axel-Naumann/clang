@@ -115,6 +115,14 @@ namespace clang {
       return Builder->GetAddrOfGlobal(global, isForDefinition);
     }
 
+    llvm::Module *StartModule(const std::string& ModuleName,
+                              llvm::LLVMContext& C) {
+      assert(!M && "Replacing existing Module?");
+      M.reset(new llvm::Module(ModuleName, C));
+      Initialize(*Ctx);
+      return M.get();
+    }
+
     void print(llvm::raw_ostream& out) {
       out << "\n\nCodeGen:\n";
       //llvm::SmallPtrSet<llvm::GlobalValue*, 10> WeakRefReferences;
@@ -439,6 +447,12 @@ void CodeGenerator::print(llvm::raw_ostream& out) {
 
 void CodeGenerator::forgetGlobal(llvm::GlobalValue* GV) {
   static_cast<CodeGeneratorImpl*>(this)->forgetGlobal(GV);
+}
+
+
+llvm::Module *CodeGenerator::StartModule(const std::string& ModuleName,
+                                         llvm::LLVMContext& C) {
+   return static_cast<CodeGeneratorImpl*>(this)->StartModule(ModuleName, C);
 }
 
 CodeGenerator *clang::CreateLLVMCodeGen(
