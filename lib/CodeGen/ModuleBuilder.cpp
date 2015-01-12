@@ -134,8 +134,7 @@ namespace clang {
     void print(llvm::raw_ostream& out) {
       out << "\n\nCodeGen:\n";
       //llvm::SmallPtrSet<llvm::GlobalValue*, 10> WeakRefReferences;
-      out << " WeakRefReferences (llvm::SmallPtrSet<llvm::GlobalValue*, 10>) @";
-      out << " " << &Builder->WeakRefReferences << "\n";
+      out << " WeakRefReferences (llvm::SmallPtrSet<llvm::GlobalValue*, 10>)\n";
       for(auto I = Builder->WeakRefReferences.begin(),
             E = Builder->WeakRefReferences.end(); I != E; ++I) {
         (*I)->print(out);
@@ -143,8 +142,7 @@ namespace clang {
       }
 
       //llvm::StringMap<GlobalDecl> DeferredDecls;
-      out << " DeferredDecls (llvm::StringMap<GlobalDecl>) @ ";
-      out << &Builder->DeferredDecls << "\n";
+      out << " DeferredDecls (llvm::StringMap<GlobalDecl>)\n";
       for(auto I = Builder->DeferredDecls.begin(),
             E = Builder->DeferredDecls.end(); I != E; ++I) {
         out << I->first.str().c_str();
@@ -153,8 +151,7 @@ namespace clang {
       }
 
       //std::vector<DeferredGlobal> DeferredDeclsToEmit;
-      out << " DeferredDeclsToEmit (std::vector<DeferredGlobal>) @ ";
-      out << &Builder->DeferredDeclsToEmit << "\n";
+      out << " DeferredDeclsToEmit (std::vector<DeferredGlobal>)\n";
       for(auto I = Builder->DeferredDeclsToEmit.begin(),
             E = Builder->DeferredDeclsToEmit.end(); I != E; ++I) {
         I->GD.getDecl()->print(out);
@@ -163,8 +160,7 @@ namespace clang {
       }
 
       //std::vector<GlobalDecl> Aliases;
-      out << " Aliases (std::vector<GlobalDecl>) @ ";
-      out << &Builder->Aliases << "\n";
+      out << " Aliases (std::vector<GlobalDecl>)\n";
       for(auto I = Builder->Aliases.begin(),
             E = Builder->Aliases.end(); I != E; ++I) {
         I->getDecl()->print(out);
@@ -173,8 +169,8 @@ namespace clang {
       //typedef llvm::StringMap<llvm::TrackingVH<llvm::Constant> >
       // ReplacementsTy;
       //ReplacementsTy Replacements;
-      out << " Replacements (llvm::StringMap<llvm::TrackingVH<llvm::Constant> >";
-      out << " @" << &Builder->Replacements << "\n";
+      out
+        << " Replacements (llvm::StringMap<llvm::TrackingVH<llvm::Constant>>\n";
       for(auto I = Builder->Replacements.begin(),
             E = Builder->Replacements.end(); I != E; ++I) {
         out << I->getKey().str().c_str();
@@ -183,8 +179,7 @@ namespace clang {
       }
 
       //std::vector<const CXXRecordDecl*> DeferredVTables;
-      out << " DeferredVTables (std::vector<const CXXRecordDecl*> @ ";
-      out << &Builder->DeferredVTables << "\n";
+      out << " DeferredVTables (std::vector<const CXXRecordDecl*>\n";
       for(auto I = Builder->DeferredVTables.begin(),
             E = Builder->DeferredVTables.end(); I != E; ++I) {
         (*I)->print(out);
@@ -192,8 +187,7 @@ namespace clang {
       }
 
       //std::vector<llvm::WeakVH> LLVMUsed;
-      out << " LLVMUsed (std::vector<llvm::WeakVH> > @ ";
-      out << &Builder->LLVMUsed << "\n";
+      out << " LLVMUsed (std::vector<llvm::WeakVH> >\n";
       for(auto I = Builder->LLVMUsed.begin(),
             E = Builder->LLVMUsed.end(); I != E; ++I) {
         (*I)->print(out);
@@ -202,8 +196,7 @@ namespace clang {
 
       // typedef std::vector<std::pair<llvm::Constant*, int> > CtorList;
       //CtorList GlobalCtors;
-      out << " GlobalCtors (std::vector<std::pair<llvm::Constant*, int> > @ ";
-      out << &Builder->GlobalCtors << "\n";
+      out << " GlobalCtors (std::vector<std::pair<llvm::Constant*, int> >\n";
       for(auto I = Builder->GlobalCtors.begin(),
             E = Builder->GlobalCtors.end(); I != E; ++I) {
         out << I->Initializer << " : " << I->AssociatedData;
@@ -211,8 +204,7 @@ namespace clang {
       }
 
       //CtorList GlobalDtors;
-      out << " GlobalDtors (std::vector<std::pair<llvm::Constant*, int> > @ ";
-      out << &Builder->GlobalDtors << "\n";
+      out << " GlobalDtors (std::vector<std::pair<llvm::Constant*, int> >\n";
       for(auto I = Builder->GlobalDtors.begin(),
             E = Builder->GlobalDtors.end(); I != E; ++I) {
         out << I->Initializer << " : " << I->AssociatedData;
@@ -224,8 +216,8 @@ namespace clang {
       //llvm::StringMap<llvm::Constant*> AnnotationStrings;
       //llvm::StringMap<llvm::Constant*> CFConstantStringMap;
       //llvm::StringMap<llvm::GlobalVariable*> ConstantStringMap;
-      out << " ConstantStringMap (llvm::DenseMap<llvm::Constant *, llvm::GlobalVariable *>) @ ";
-      out << &Builder->ConstantStringMap << "\n";
+      out << " ConstantStringMap (llvm::DenseMap<llvm::Constant *, "
+             "llvm::GlobalVariable *>)\n";
       for(auto I = Builder->ConstantStringMap.begin(),
             E = Builder->ConstantStringMap.end(); I != E; ++I) {
         I->first->print(out);
