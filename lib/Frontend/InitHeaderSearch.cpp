@@ -336,7 +336,7 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
       break;
     }
     break;
-  case llvm::Triple::Cygwin:
+  case llvm::Triple::Cygnus:
     // The headers in w32api/ are not cygwin-compatible (but native)
     //AddPath("/usr/include/w32api", System, false);
     break;
