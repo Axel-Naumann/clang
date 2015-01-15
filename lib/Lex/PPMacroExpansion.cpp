@@ -70,10 +70,6 @@ void Preprocessor::removeMacro(IdentifierInfo *II, MacroDirective *MD) {
     appendMacroDirective(II, prevMD);
     prevMD->setPrevious(prevPrevMD);
   }
-  // Release the MacroInfo allocated space so it can be reused.
-  if (MacroInfo* MI = MD->getMacroInfo()) {
-    ReleaseMacroInfo(MI);
-  }
 }
 
 
