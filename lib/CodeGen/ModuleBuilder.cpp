@@ -89,8 +89,6 @@ namespace clang {
     }
 
     llvm::Module *ReleaseModule() override {
-      assert(M && "Releasing 0?");
-      Builder->Release();
       return M.release();
     }
 
