@@ -1148,7 +1148,7 @@ resolveFileThroughHeaderSearch(Preprocessor& PP, StringRef Filename,
       const FileEntry* FE
         = HdrSearch.LookupFile(substName, SourceLocation(), true/*isAngled*/,
                                0/*FromDir*/, FoundDir,
-                               ArrayRef<const FileEntry*>() /*Includers*/,
+ ArrayRef<std::pair<const FileEntry *, const DirectoryEntry *>>() /*Includers*/,
                                0/*Searchpath*/, 0/*RelPath*/, 0/*SuggModule*/,
                                false /*SkipCache*/, false /*OpenFile*/,
                                true /*CacheFailure*/);
@@ -1176,7 +1176,7 @@ resolveFileThroughHeaderSearch(Preprocessor& PP, StringRef Filename,
       const FileEntry* FE
         = HdrSearch.LookupFile(trailingPart, SourceLocation(), true/*isAngled*/,
                                0/*FromDir*/, FoundDir,
-                               ArrayRef<const FileEntry*>() /*Includers*/,
+ ArrayRef<std::pair<const FileEntry *, const DirectoryEntry *>>() /*Includers*/,
                                0/*Searchpath*/, 0/*RelPath*/, 0/*SuggModule*/,
                                false /*SkipCache*/, false /*OpenFile*/,
                                true /*CacheFailure*/);
