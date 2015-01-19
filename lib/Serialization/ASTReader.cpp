@@ -2400,7 +2400,6 @@ ASTReader::ReadControlBlock(ModuleFile &F,
           if (Validate && (!IF.getFile() || IF.isOutOfDate()))
             return OutOfDate;
         }
-      }
 
       if (Listener)
         Listener->visitModuleFile(F.FileName);
