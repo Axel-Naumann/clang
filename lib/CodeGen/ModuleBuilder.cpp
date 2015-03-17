@@ -33,7 +33,7 @@ namespace clang {
     ASTContext *Ctx;
     const HeaderSearchOptions &HeaderSearchOpts; // Only used for debug info.
     const PreprocessorOptions &PreprocessorOpts; // Only used for debug info.
-    const CodeGenOptions CodeGenOpts;  // Intentionally copied in.
+    CodeGenOptions CodeGenOpts;  // Intentionally copied in.
 
     unsigned HandlingTopLevelDecls;
     struct HandlingTopLevelDeclRAII {
@@ -96,11 +96,13 @@ namespace clang {
     llvm::Module *ReleaseModule() override { return M.release(); }
 
     llvm::Module *StartModule(const std::string& ModuleName,
-                              llvm::LLVMContext& C) override {
+                              llvm::LLVMContext& C,
+                              const CodeGenOptions& CGO) override {
       assert(!M && "Replacing existing Module?");
 
       std::unique_ptr<CodeGen::CodeGenModule> OldBuilder;
       OldBuilder.swap(Builder);
+      CodeGenOpts = CGO;
       M.reset(new llvm::Module(ModuleName, C));
       Initialize(*Ctx);
 
