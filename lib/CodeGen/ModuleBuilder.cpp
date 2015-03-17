@@ -35,7 +35,7 @@ namespace clang {
     ASTContext *Ctx;
     const HeaderSearchOptions &HeaderSearchOpts; // Only used for debug info.
     const PreprocessorOptions &PreprocessorOpts; // Only used for debug info.
-    const CodeGenOptions CodeGenOpts;  // Intentionally copied in.
+    CodeGenOptions CodeGenOpts;  // Intentionally copied in.
 
     unsigned HandlingTopLevelDecls;
 
@@ -116,11 +116,13 @@ namespace clang {
     }
 
     llvm::Module *StartModule(const std::string& ModuleName,
-                              llvm::LLVMContext& C) {
+                              llvm::LLVMContext& C,
+                              const CodeGenOptions& CGO) {
       assert(!M && "Replacing existing Module?");
 
       std::unique_ptr<CodeGen::CodeGenModule> OldBuilder;
       OldBuilder.swap(Builder);
+      CodeGenOpts = CGO;
       M.reset(new llvm::Module(ModuleName, C));
       Initialize(*Ctx);
 
@@ -476,8 +478,9 @@ void CodeGenerator::forgetGlobal(llvm::GlobalValue* GV) {
 
 
 llvm::Module *CodeGenerator::StartModule(const std::string& ModuleName,
-                                         llvm::LLVMContext& C) {
-   return static_cast<CodeGeneratorImpl*>(this)->StartModule(ModuleName, C);
+                                         llvm::LLVMContext& C,
+                                         const CodeGenOptions& CGO) {
+  return static_cast<CodeGeneratorImpl*>(this)->StartModule(ModuleName, C, CGO);
 }
 
 CodeGenerator *clang::CreateLLVMCodeGen(

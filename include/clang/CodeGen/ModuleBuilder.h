@@ -85,7 +85,8 @@ public:
   void print(llvm::raw_ostream& out);
   void forgetGlobal(llvm::GlobalValue* GV);
   llvm::Module* StartModule(const std::string& ModuleName,
-                            llvm::LLVMContext& C)
+                            llvm::LLVMContext& C,
+                            const CodeGenOptions& CGO);
 };
 
 /// CreateLLVMCodeGen - Create a CodeGenerator instance.
