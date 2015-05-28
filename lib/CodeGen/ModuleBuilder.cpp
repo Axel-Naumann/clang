@@ -93,7 +93,14 @@ namespace clang {
       return D;
     }
 
-    llvm::Module *ReleaseModule() override { return M.release(); }
+    llvm::Module *ReleaseModule() override {
+      // Remove pending etc decls in case of error; the asserts in StartModule()
+      // will rightfully be confused otherwise, as none of the decls were
+      // emitted.
+      if (Diags.hasErrorOccurred())
+        Builder->clear();
+      return M.release();
+    }
 
     llvm::Module *StartModule(const std::string& ModuleName,
                               llvm::LLVMContext& C,
