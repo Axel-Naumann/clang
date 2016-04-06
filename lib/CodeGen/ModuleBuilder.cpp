@@ -209,6 +209,16 @@ namespace clang {
       out.flush();
     }
 
+    virtual void forgetGlobal(llvm::GlobalValue* GV) override {
+      for(auto I = Builder->ConstantStringMap.begin(),
+            E = Builder->ConstantStringMap.end(); I != E; ++I) {
+        if (I->second == GV) {
+          Builder->ConstantStringMap.erase(I);
+          break;
+        }
+      }
+    }
+
     void Initialize(ASTContext &Context) override {
       Ctx = &Context;
 
