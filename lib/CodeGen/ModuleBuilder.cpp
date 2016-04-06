@@ -229,6 +229,16 @@ namespace clang {
       out.flush();
     }
 
+    void forgetGlobal(llvm::GlobalValue* GV) {
+      for(auto I = Builder->ConstantStringMap.begin(),
+            E = Builder->ConstantStringMap.end(); I != E; ++I) {
+        if (I->second == GV) {
+          Builder->ConstantStringMap.erase(I);
+          break;
+        }
+      }
+    }
+
     void Initialize(ASTContext &Context) override {
       Ctx = &Context;
 
@@ -427,6 +437,9 @@ void CodeGenerator::print(llvm::raw_ostream& out) {
   static_cast<CodeGeneratorImpl*>(this)->print(out);
 }
 
+void CodeGenerator::forgetGlobal(llvm::GlobalValue* GV) {
+  static_cast<CodeGeneratorImpl*>(this)->forgetGlobal(GV);
+}
 
 CodeGenerator *clang::CreateLLVMCodeGen(
     DiagnosticsEngine &Diags, llvm::StringRef ModuleName,

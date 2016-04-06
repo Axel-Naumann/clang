@@ -18,6 +18,7 @@
 
 namespace llvm {
   class Constant;
+  class GlobalValue;
   class LLVMContext;
   class Module;
   class raw_ostream;
@@ -82,6 +83,7 @@ public:
   llvm::Constant *GetAddrOfGlobal(GlobalDecl decl, bool isForDefinition);
 
   void print(llvm::raw_ostream& out);
+  void forgetGlobal(llvm::GlobalValue* GV);
 };
 
 /// CreateLLVMCodeGen - Create a CodeGenerator instance.
