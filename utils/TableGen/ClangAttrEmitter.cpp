@@ -996,7 +996,7 @@ namespace {
   class VariadicStringArgument : public VariadicArgument {
   public:
     VariadicStringArgument(const Record &Arg, StringRef Attr)
-      : VariadicArgument(Arg, Attr, "StringRef")
+      : VariadicArgument(Arg, Attr, "std::string")
     {}
     void writeCtorBody(raw_ostream &OS) const override {
       OS << "    for (size_t I = 0, E = " << getArgSizeName() << "; I != E;\n"
