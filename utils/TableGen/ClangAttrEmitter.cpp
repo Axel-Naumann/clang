@@ -82,6 +82,7 @@ static std::string ReadPCHRecord(StringRef type) {
     .Case("Expr *", "ReadExpr(F)")
     .Case("IdentifierInfo *", "GetIdentifierInfo(F, Record, Idx)")
     .Case("StringRef", "ReadString(Record, Idx)")
+    .Case("std::string", "ReadString(Record, Idx)")
     .Default("Record[Idx++]");
 }
 
@@ -96,6 +97,7 @@ static std::string WritePCHRecord(StringRef type, StringRef name) {
     .Case("IdentifierInfo *", 
           "AddIdentifierRef(" + std::string(name) + ", Record);\n")
     .Case("StringRef", "AddString(" + std::string(name) + ", Record);\n")
+    .Case("std::string", "AddString(" + std::string(name) + ", Record);\n")
     .Default("Record.push_back(" + std::string(name) + ");\n");
 }
 

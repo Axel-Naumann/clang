@@ -4655,7 +4655,7 @@ static void handleDeclspecThreadAttr(Sema &S, Decl *D,
 }
 
 static void handleAbiTagAttr(Sema &S, Decl *D, const AttributeList &Attr) {
-  SmallVector<StringRef, 4> Tags;
+  SmallVector<std::string, 4> Tags;
   for (unsigned I = 0, E = Attr.getNumArgs(); I != E; ++I) {
     StringRef Tag;
     if (!S.checkStringLiteralArgumentAttr(Attr, I, Tag))
@@ -5171,7 +5171,7 @@ static void handleNoSanitizeAttr(Sema &S, Decl *D, const AttributeList &Attr) {
   if (!checkAttributeAtLeastNumArgs(S, Attr, 1))
     return;
 
-  std::vector<StringRef> Sanitizers;
+  std::vector<std::string> Sanitizers;
 
   for (unsigned I = 0, E = Attr.getNumArgs(); I != E; ++I) {
     StringRef SanitizerName;
@@ -5195,12 +5195,13 @@ static void handleNoSanitizeSpecificAttr(Sema &S, Decl *D,
                                          const AttributeList &Attr) {
   StringRef AttrName = Attr.getName()->getName();
   normalizeName(AttrName);
-  StringRef SanitizerName =
+  StringRef SanitizerNameRef =
       llvm::StringSwitch<StringRef>(AttrName)
           .Case("no_address_safety_analysis", "address")
           .Case("no_sanitize_address", "address")
           .Case("no_sanitize_thread", "thread")
           .Case("no_sanitize_memory", "memory");
+  std::string SanitizerName = SanitizerNameRef;
   D->addAttr(::new (S.Context)
                  NoSanitizeAttr(Attr.getRange(), S.Context, &SanitizerName, 1,
                                 Attr.getAttributeSpellingListIndex()));
