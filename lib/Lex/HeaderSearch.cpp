@@ -630,7 +630,7 @@ const FileEntry *HeaderSearch::LookupFile(
           Includer ? getFileInfo(Includer).DirInfo != SrcMgr::C_User :
           BuildSystemModule;
       if (const FileEntry *FE = getFileAndSuggestModule(
-              TmpDir, IncluderAndDir.second, IncluderIsSystemHeader,
+              TmpDir, IncludeLoc, IncluderAndDir.second, IncluderIsSystemHeader,
               RequestingModule, SuggestedModule,
               OpenFile, CacheFailures)) {
         if (!Includer) {
